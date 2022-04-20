@@ -16,7 +16,7 @@ from helpers import (
     words_to_lowercase
 )
 
-NEEDED_WORD_LENGTH = 4
+NEEDED_WORD_LENGTH = 5
 
 #converts pdf, returns its text content as a string
 def convert_pdf_to_text(fname, pages = None):
