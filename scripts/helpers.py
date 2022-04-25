@@ -35,3 +35,14 @@ def filter_words_with_minus(wordsList):
 
 def filter_numbers(wordsList):
     return filter(lambda s : not any(i.isdigit() for i in s), wordsList)
+
+def lambda_print(text):
+    return lambda : print(text)
+
+def tap(f):
+    def a(x):
+        f()
+
+        return x
+
+    return a

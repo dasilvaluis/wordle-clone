@@ -15,6 +15,8 @@ from helpers import (
     filter_by_element_len_of,
     filter_numbers,
     filter_words_with_minus,
+    lambda_print,
+    tap,
     text_to_list,
     words_to_lowercase
 )
@@ -52,36 +54,30 @@ def save_output_to_json(filename, li):
     with open(filename, "w", encoding = "utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
-def lambda_print(t):
-    def a(x):
-        print(t)
-
-        return x
-
-    return a
+tap_print = lambda t : tap(lambda_print(t))
 
 cleanup_words_list = composite(
     clean_duplicates,
-    lambda_print("- 5/5 cleaning duplicates"),
+    tap_print("- 5/5 cleaning duplicates"),
     words_to_lowercase,
-    lambda_print("- 4/5 transforming words to lowercase"),
+    tap_print("- 4/5 transforming words to lowercase"),
     filter_by_element_len_of(NEEDED_WORD_LENGTH),
-    lambda_print("- 3/5 filtering words with len != " + str(NEEDED_WORD_LENGTH)),
+    tap_print("- 3/5 filtering words with len != " + str(NEEDED_WORD_LENGTH)),
     filter_words_with_minus,
-    lambda_print("- 2/5 filtering minus"),
+    tap_print("- 2/5 filtering minus"),
     filter_numbers,
-    lambda_print("- 1/5 filtering numbers")
+    tap_print("- 1/5 filtering numbers")
 )
 
 pdf_to_word_list = composite(
     text_to_list,
-    lambda_print("- 4/4 converting text to list"),
+    tap_print("- 4/4 converting text to list"),
     clean_punctuation,
-    lambda_print("- 3/4 cleaning punctuation"),
+    tap_print("- 3/4 cleaning punctuation"),
     clean_line_breaks,
-    lambda_print("- 2/4 cleaning line breaks"),
+    tap_print("- 2/4 cleaning line breaks"),
     convert_pdf_to_text,
-    lambda_print("- 1/4 converting pdf to text"),
+    tap_print("- 1/4 converting pdf to text"),
 )
 
 #converts all pdfs in directory pdfDir, saves all resulting txt files to txtdir
