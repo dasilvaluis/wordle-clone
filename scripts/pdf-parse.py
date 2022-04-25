@@ -1,3 +1,4 @@
+from ast import If
 import io
 import os
 import json
@@ -12,6 +13,8 @@ from helpers import (
     clean_punctuation,
     composite,
     filter_by_element_len_of,
+    filter_numbers,
+    filter_words_with_minus,
     text_to_list,
     words_to_lowercase
 )
@@ -49,38 +52,75 @@ def save_output_to_json(filename, li):
     with open(filename, "w", encoding = "utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
+def lambda_print(t):
+    def a(x):
+        print(t)
 
-build_four_letter_words_list = composite(
+        return x
+
+    return a
+
+cleanup_words_list = composite(
     clean_duplicates,
+    lambda_print("- 5/5 cleaning duplicates"),
     words_to_lowercase,
+    lambda_print("- 4/5 transforming words to lowercase"),
     filter_by_element_len_of(NEEDED_WORD_LENGTH),
+    lambda_print("- 3/5 filtering words with len != " + str(NEEDED_WORD_LENGTH)),
+    filter_words_with_minus,
+    lambda_print("- 2/5 filtering minus"),
+    filter_numbers,
+    lambda_print("- 1/5 filtering numbers")
+)
+
+pdf_to_word_list = composite(
     text_to_list,
+    lambda_print("- 4/4 converting text to list"),
     clean_punctuation,
+    lambda_print("- 3/4 cleaning punctuation"),
     clean_line_breaks,
-    convert_pdf_to_text
+    lambda_print("- 2/4 cleaning line breaks"),
+    convert_pdf_to_text,
+    lambda_print("- 1/4 converting pdf to text"),
 )
 
 #converts all pdfs in directory pdfDir, saves all resulting txt files to txtdir
-def convertMultiple(pdfDir, outDir):
-    if pdfDir == "": pdfDir = os.getcwd() + "\\" #if no pdfDir passed in 
+def convert_multiple_pdf_to_text(pdf_dir, out_dir):
+    if type(out_dir) != str or out_dir == "" : out_dir = os.getcwd() + "/" 
+    if type(pdf_dir) != str or pdf_dir == "" : pdf_dir = os.getcwd() + "/" 
 
-    for pdf in os.listdir(pdfDir): #iterate through pdfs in pdf directory
-        file_extension = pdf.split(".")[-1]
+    out_file = out_dir + "output.json"
+
+    all_words = []
+
+    for pdf_file in os.listdir(pdf_dir):
+        file_extension = pdf_file.split(".")[-1]
 
         if file_extension == "pdf":
-            source_pdf_filename = pdfDir + pdf 
-            output_filename = outDir + pdf + ".json"
-            
-            four_letter_words = build_four_letter_words_list(source_pdf_filename)
+            print("Found file: " + pdf_file)
 
-            save_output_to_json(output_filename, four_letter_words)
+            source_pdf_filename = pdf_dir + pdf_file
+
+            words_from_pdf = pdf_to_word_list(source_pdf_filename)
+
+            all_words.extend(words_from_pdf)
 
 
+    if (len(all_words) > 0): 
+        print("Finished parsing files. Processing text...")
+
+        filtered_words = cleanup_words_list(all_words)
+
+        print("Finished processing text. Saving list to file: " + out_file)
+
+        save_output_to_json(out_file, filtered_words)
+    else:
+        print("No words.")
+
+# set paths:
 script_dir = os.path.dirname(__file__)
+pdfDir = os.path.join(script_dir, "../data/")
+outDir = os.path.join(script_dir, "./output/")
 
-# set paths accordingly:
-pdfDir = os.path.join(script_dir, "..\data\\")
-outDir = os.path.join(script_dir, "output\\")
-
-convertMultiple(pdfDir, outDir)
+convert_multiple_pdf_to_text(pdfDir, outDir)
 

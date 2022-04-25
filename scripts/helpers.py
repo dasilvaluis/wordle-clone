@@ -10,7 +10,7 @@ def text_to_list(text):
     return list(text.split(" "))
 
 def clean_punctuation(text):
-    punc = '''!()„[]{};:'"\,<>./?@#$%^&*_~'''
+    punc = '''!()„…’[]{};:'"\,<>./?@#$%^&*_~'''
 
     for ele in text:
         if ele in punc:
@@ -29,3 +29,9 @@ def filter_by_element_len_of(length):
 
 def words_to_lowercase(wordsList):
     return map(lambda x : x.lower(), wordsList)
+
+def filter_words_with_minus(wordsList):
+    return filter(lambda x : '-' not in x, wordsList)
+
+def filter_numbers(wordsList):
+    return filter(lambda s : not any(i.isdigit() for i in s), wordsList)
