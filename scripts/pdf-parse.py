@@ -7,7 +7,7 @@ from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
 from pdfminer.pdfpage import PDFPage
 
-from helpers import (
+from helpers.text import (
     clean_duplicates,
     clean_joint_letters,
     clean_line_breaks,
@@ -21,7 +21,7 @@ from helpers import (
     words_to_lowercase
 )
 
-from functional import (
+from helpers.functional import (
     composite,
     lambda_print,
     tap,
