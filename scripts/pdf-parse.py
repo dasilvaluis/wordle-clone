@@ -1,4 +1,3 @@
-from ast import If
 import io
 import os
 import json
@@ -26,6 +25,8 @@ from helpers.functional import (
     lambda_print,
     tap,
 )
+
+from helpers.files import is_pdf_file
 
 NEEDED_WORD_LENGTH = 5
 
@@ -101,7 +102,7 @@ def convert_multiple_pdf_to_text(pdf_dir, out_dir):
 
     all_words = []
 
-    pdf_files = filter(lambda x : x.split(".")[-1] == "pdf", os.listdir(pdf_dir))
+    pdf_files = filter(is_pdf_file, os.listdir(pdf_dir))
 
     for filename in pdf_files:
         print("Found file: " + filename)
