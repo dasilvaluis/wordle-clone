@@ -9,16 +9,22 @@ from pdfminer.pdfpage import PDFPage
 
 from helpers import (
     clean_duplicates,
+    clean_joint_letters,
     clean_line_breaks,
     clean_punctuation,
-    composite,
     filter_by_element_len_of,
+    filter_foreign_words,
+    join_broken_words,
     filter_numbers,
     filter_words_with_minus,
-    lambda_print,
-    tap,
     text_to_list,
     words_to_lowercase
+)
+
+from functional import (
+    composite,
+    lambda_print,
+    tap,
 )
 
 NEEDED_WORD_LENGTH = 5
@@ -58,26 +64,32 @@ tap_print = lambda t : tap(lambda_print(t))
 
 cleanup_words_list = composite(
     clean_duplicates,
-    tap_print("- 5/5 cleaning duplicates"),
+    tap_print("- filtering foreign words"),
+    filter_foreign_words,
+    tap_print("- cleaning duplicates"),
     words_to_lowercase,
-    tap_print("- 4/5 transforming words to lowercase"),
+    tap_print("- transforming words to lowercase"),
     filter_by_element_len_of(NEEDED_WORD_LENGTH),
-    tap_print("- 3/5 filtering words with len != " + str(NEEDED_WORD_LENGTH)),
+    tap_print("- filtering words with len != " + str(NEEDED_WORD_LENGTH)),
     filter_words_with_minus,
-    tap_print("- 2/5 filtering minus"),
+    tap_print("- filtering minus"),
     filter_numbers,
-    tap_print("- 1/5 filtering numbers")
+    tap_print("- filtering numbers")
 )
 
 pdf_to_word_list = composite(
     text_to_list,
-    tap_print("- 4/4 converting text to list"),
+    tap_print("- converting text to list"),
+    clean_joint_letters,
+    tap_print("- cleaning joint letters"),
     clean_punctuation,
-    tap_print("- 3/4 cleaning punctuation"),
+    tap_print("- cleaning punctuation"),
     clean_line_breaks,
-    tap_print("- 2/4 cleaning line breaks"),
+    tap_print("- cleaning line breaks"),
+    join_broken_words,
+    tap_print("- joining broken words"),
     convert_pdf_to_text,
-    tap_print("- 1/4 converting pdf to text"),
+    tap_print("- converting pdf to text"),
 )
 
 #converts all pdfs in directory pdfDir, saves all resulting txt files to txtdir
@@ -85,22 +97,20 @@ def convert_multiple_pdf_to_text(pdf_dir, out_dir):
     if type(out_dir) != str or out_dir == "" : out_dir = os.getcwd() + "/" 
     if type(pdf_dir) != str or pdf_dir == "" : pdf_dir = os.getcwd() + "/" 
 
-    out_file = out_dir + "output.json"
+    out_file = out_dir + "words.json"
 
     all_words = []
 
-    for pdf_file in os.listdir(pdf_dir):
-        file_extension = pdf_file.split(".")[-1]
+    pdf_files = filter(lambda x : x.split(".")[-1] == "pdf", os.listdir(pdf_dir))
 
-        if file_extension == "pdf":
-            print("Found file: " + pdf_file)
+    for filename in pdf_files:
+        print("Found file: " + filename)
 
-            source_pdf_filename = pdf_dir + pdf_file
+        source_pdf_filename = pdf_dir + filename
 
-            words_from_pdf = pdf_to_word_list(source_pdf_filename)
+        words_from_pdf = pdf_to_word_list(source_pdf_filename)
 
-            all_words.extend(words_from_pdf)
-
+        all_words.extend(words_from_pdf)
 
     if (len(all_words) > 0): 
         print("Finished parsing files. Processing text...")
@@ -116,7 +126,7 @@ def convert_multiple_pdf_to_text(pdf_dir, out_dir):
 # set paths:
 script_dir = os.path.dirname(__file__)
 pdfDir = os.path.join(script_dir, "../data/")
-outDir = os.path.join(script_dir, "./output/")
+outDir = os.path.join(script_dir, "../words-dataset/")
 
 convert_multiple_pdf_to_text(pdfDir, outDir)
 

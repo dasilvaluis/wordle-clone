@@ -1,48 +1,68 @@
+from typing import List
 from functools import reduce
 
-def composite(*func):
-    def compose(f, g):
-        return lambda x : f(g(x))
-    
-    return reduce(compose, func, lambda x : x)
-
-def text_to_list(text):
+def text_to_list(text: str):
     return list(text.split(" "))
 
-def clean_punctuation(text):
+def clean_punctuation(text: str):
     punc = '''!()„…’[]{};:'"\,<>./?@#$%^&*_~'''
-
+    
     for ele in text:
         if ele in punc:
             text = text.replace(ele, "")
 
     return text
 
-def clean_line_breaks(text):
-    return text.replace("\n", " ").replace("\f", " ")
+def replace_text_with_pairs(pairs, text):
+    def replace_text(acc, pair):
+        return acc.replace(pair[0], pair[1])
 
-def clean_duplicates(wordsList):
+    return reduce(replace_text, pairs, text)
+
+def clean_joint_letters(text: str):
+    pairs = [
+        ("ﬂ", "fl"),
+        ("ﬁ", "fi")
+    ]
+
+    return replace_text_with_pairs(pairs, text)
+
+def join_broken_words(text: str):
+    pairs = [
+        ("-\n", "")
+    ]
+
+    return replace_text_with_pairs(pairs, text)
+
+def clean_line_breaks(text: str):
+    pairs = [
+        ("\n", " "),
+        ("\f", " ")
+    ]
+
+    return replace_text_with_pairs(pairs, text)
+
+def clean_duplicates(wordsList: List[str]):
     return list(dict.fromkeys(wordsList))
 
-def filter_by_element_len_of(length):
+def filter_by_element_len_of(length: int):
     return lambda li : [word for word in li if len(word) == length]
 
-def words_to_lowercase(wordsList):
+def words_to_lowercase(wordsList: List[str]):
     return map(lambda x : x.lower(), wordsList)
 
-def filter_words_with_minus(wordsList):
-    return filter(lambda x : '-' not in x, wordsList)
+def filter_words_with_minus(wordsList: List[str]):
+    without_minus = lambda x : '-' not in x
 
-def filter_numbers(wordsList):
-    return filter(lambda s : not any(i.isdigit() for i in s), wordsList)
+    return filter(without_minus, wordsList)
 
-def lambda_print(text):
-    return lambda : print(text)
+def filter_foreign_words(wordsList: List[str]):
+    foreign_letters = 'kwyç'
+    probably_not_foreign = lambda w : not any(l in w for l in foreign_letters)
 
-def tap(f):
-    def a(x):
-        f()
+    return filter(probably_not_foreign, wordsList)
 
-        return x
+def filter_numbers(wordsList: List[str]):
+    without_numbers = lambda s : not any(i.isdigit() for i in s)
 
-    return a
+    return filter(without_numbers, wordsList)
