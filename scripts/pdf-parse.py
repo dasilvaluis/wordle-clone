@@ -22,8 +22,7 @@ from helpers.text import (
 
 from helpers.functional import (
     composite,
-    lambda_print,
-    tap,
+    tap_print,
 )
 
 from helpers.files import is_pdf_file
@@ -60,8 +59,6 @@ def save_output_to_json(filename, li):
 
     with open(filename, "w", encoding = "utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
-
-tap_print = lambda t : tap(lambda_print(t))
 
 cleanup_words_list = composite(
     clean_duplicates,

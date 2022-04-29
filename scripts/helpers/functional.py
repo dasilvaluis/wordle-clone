@@ -16,3 +16,7 @@ def composite(*funcs):
         return lambda x : f(g(x))
     
     return reduce(compose, funcs, lambda x : x)
+
+
+def tap_print(t):
+    tap(lambda_print(t))
