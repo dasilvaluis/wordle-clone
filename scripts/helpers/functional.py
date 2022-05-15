@@ -19,4 +19,4 @@ def composite(*funcs):
 
 
 def tap_print(t):
-    tap(lambda_print(t))
+    return tap(lambda_print(t))
