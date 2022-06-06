@@ -1,2 +1,17 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<script>
+  import Game from "../pages/game.svelte";
+</script>
+
+<h1>Welcome to Wordle Clone</h1>
+
+<Game />
+
+<style global lang="scss">
+  html {
+    font-size: 16px;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+</style>

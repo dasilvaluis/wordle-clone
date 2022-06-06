@@ -8,3 +8,8 @@ declare namespace App {
 	// interface Session {}
 	// interface Stuff {}
 }
+
+type BoardMatrix = {
+	cells: string[];
+	commited: boolean;
+}[];
