@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { EMPTY_CELL_VALUE, MAX_COLUMN_SIZE, MAX_ROW_SIZE } from '../constants';
-	import Board from '../components/board/board.svelte';
+	import Board from '../components/matrix/matrix.svelte';
 	import Keyboard from '../components/keyboard/keyboard.svelte';
-import { findIndexBottomTop } from '../helpers/array-utils';
+	import { findIndexBottomTop } from '../helpers/array-utils';
 
 	let boardState: BoardMatrix = Array(MAX_COLUMN_SIZE).fill(null).map(() => ({
 		cells: Array(MAX_ROW_SIZE).fill(EMPTY_CELL_VALUE),
