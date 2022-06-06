@@ -5,7 +5,7 @@
 	export let boardState: BoardMatrix;
 </script>
 
-<div class="matrix">
+<div class={`matrix ${$$props.class}`}>
 	{#each boardState as row}
 		<div class="matrix-row">
 			{#each row.cells as letter}

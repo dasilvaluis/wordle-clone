@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { EMPTY_CELL_VALUE, MAX_COLUMN_SIZE, MAX_ROW_SIZE } from '../constants';
-	import Board from '../components/matrix/matrix.svelte';
+	import Matrix from '../components/matrix/matrix.svelte';
 	import Keyboard from '../components/keyboard/keyboard.svelte';
 	import { findIndexBottomTop } from '../helpers/array-utils';
 
@@ -49,14 +49,11 @@
 	}
 </script>
 
-<div class="board-wrapper">
-	<Board boardState={boardState} />
-</div>
-
+<Matrix class="matrix-wrapper" boardState={boardState} />
 <Keyboard on:click={handleKeyboardPress} />
 
 <style lang="scss">
-	.board-wrapper {
+	.matrix-wrapper {
 		margin-bottom: 1rem;
 	}
 </style>
